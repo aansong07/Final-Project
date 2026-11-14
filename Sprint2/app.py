@@ -1,6 +1,8 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
+
+ALLOWED_TAGS = {"protein", "carbs", "fiber", "vegetarian", "vegan"}
 
 recipes = [
     {
@@ -70,6 +72,57 @@ recipes = [
 ]
 
 
+def clean_recipe_data(data):
+    if not isinstance(data, dict):
+        return None, "Request body must be a JSON object."
+
+    name = data.get("name")
+    if not isinstance(name, str) or not name.strip():
+        return None, "'name' must be a non-empty string."
+
+    prep_minutes = data.get("prepMinutes")
+    if isinstance(prep_minutes, bool):
+        return None, "'prepMinutes' must be a positive integer."
+    if isinstance(prep_minutes, str):
+        prep_minutes = prep_minutes.strip()
+        try:
+            prep_minutes = int(prep_minutes)
+        except ValueError:
+            return None, "'prepMinutes' must be a positive integer."
+    elif not isinstance(prep_minutes, int):
+        return None, "'prepMinutes' must be a positive integer."
+    if prep_minutes <= 0:
+        return None, "'prepMinutes' must be a positive integer."
+
+    tags = data.get("tags")
+    if not isinstance(tags, list):
+        return None, "'tags' must be a list of allowed tag strings."
+    cleaned_tags = []
+    for tag in tags:
+        if not isinstance(tag, str):
+            return None, "'tags' must contain only allowed tag strings."
+        tag = tag.strip()
+        if tag not in ALLOWED_TAGS:
+            return None, f"'{tag}' is not an allowed tag."
+        if tag not in cleaned_tags:
+            cleaned_tags.append(tag)
+
+    cleaned_recipe = {
+        "name": name.strip(),
+        "tags": cleaned_tags,
+        "prepMinutes": prep_minutes,
+    }
+    for field in ("ingredients", "steps"):
+        values = data.get(field)
+        if not isinstance(values, list):
+            return None, f"'{field}' must be a list of strings."
+        if any(not isinstance(value, str) or not value.strip() for value in values):
+            return None, f"'{field}' must contain non-empty strings."
+        cleaned_recipe[field] = [value.strip() for value in values]
+
+    return cleaned_recipe, None
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -86,6 +139,53 @@ def get_recipe(recipe_id):
     if recipe is None:
         return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
     return jsonify(recipe)
+
+
+@app.route("/api/recipes", methods=["POST"])
+def create_recipe():
+    recipe_data, error = clean_recipe_data(request.get_json(silent=True))
+    if error:
+        return jsonify({"error": error}), 400
+
+    recipe = {
+        "id": max((item["id"] for item in recipes), default=0) + 1,
+        **recipe_data,
+    }
+    recipes.append(recipe)
+    return jsonify(recipe), 201
+
+
+@app.route("/api/recipes/<recipe_id>", methods=["PUT"])
+def update_recipe(recipe_id):
+    recipe = next((item for item in recipes if str(item["id"]) == recipe_id), None)
+    if recipe is None:
+        return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
+
+    recipe_data, error = clean_recipe_data(request.get_json(silent=True))
+    if error:
+        return jsonify({"error": error}), 400
+
+    recipe.update(recipe_data)
+    return jsonify(recipe)
+
+
+@app.route("/api/recipes/<recipe_id>", methods=["DELETE"])
+def delete_recipe(recipe_id):
+    recipe = next((item for item in recipes if str(item["id"]) == recipe_id), None)
+    if recipe is None:
+        return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
+    recipes.remove(recipe)
+    return "", 204
+
+
+@app.errorhandler(404)
+def handle_not_found(_error):
+    return jsonify({"error": "Not found."}), 404
+
+
+@app.errorhandler(500)
+def handle_internal_error(_error):
+    return jsonify({"error": "Internal server error."}), 500
 
 
 if __name__ == "__main__":
