@@ -1,0 +1,5 @@
+I changed my pitch form the workout user-flow system to a recipe book. The user will have options of " Protien, Fiber, Carbs, Vegan, and Vegetarian." That will then filter the recieps to ones that match with the options listed. 
+
+The user will open the website and be introduced to the name and filter system. On the left hand side there is a filter system of different options. Once an option is chosen a list of recipes the match the tag name will apear. Each recipe will show the tags, time, and short list with instructions. 
+
+Using the Lab 4 guide and emulated the SPEC to match what I wanted to create in the style.css, index.html, and app.js . I then used co-pilot to create the specific files for the website to be functional. Once I had the files i went into the styl.css to change some of the stylist choices along with certain phrases that were used throughtout the website. I also took a look at the app.js files to famialiar myself with the structure just incase I would have to debug something. 
