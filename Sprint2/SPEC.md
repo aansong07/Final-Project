@@ -3,14 +3,14 @@
 - A single-page recipe finder for one user. the user picks dietary/nutrition
   filters and the page shows recipes that match.
 - Filters: Protein, Carbs, Fiber, Vegetarian, Vegan.
-- Non-Goals: no multi-page routing; no backend; no accounts or login;
+- Non-Goals: no multi-page routing; no accounts or login;
   no saving favorites; no user-submitted recipes; no external recipe APIs.
 
 ## 2. Invariants & Negative Constraints
 - All styling MUST reside in `./style.css` (no inline style="..." attributes).
 - All behavior MUST reside in `./script.js` (no inline onclick="..." attributes).
 - Recipe data MUST live in one place: a `recipes` array in `./recipes.js`
-  (or `./recipes.json`). Recipes MUST NOT be hardcoded in index.html.
+  Recipes MUST NOT be hardcoded in index.html or script.js. recipes.js is deleted once the frontend uses fetch().
 - The page MUST NOT load external CSS frameworks, JS frameworks, or CDNs
   (no Bootstrap, no Tailwind, no React, no jQuery).
 - style.css MUST begin with the universal reset: `*, *::before, *::after {
@@ -39,6 +39,7 @@
 - Filter logic: <decide: multiple filters combine with AND (recipe must match
   all selected) or OR (match any)>.
 - Vegan recipes MUST also count as vegetarian. <confirm or change>.
+- Add-recipe form: name, prep minutes, tags, ingredients, steps, and a submit button, each with a <label>.
 
 ### 3.3 Recipes section (id="recipes")
 - Each recipe MUST be an <article class="card"> inside a container that uses
@@ -72,6 +73,12 @@
 - Read request data with .get() and clean it: strip whitespace from strings, make prepMinutes an integer, and only accept the allowed tags.
 - if a ewquired field is missing or invalid return 400 and a JSON error message that syays what is wrong.
 - Return a JSON error for 404 and 500.
+- | Method | Path | Success | Errors |
+| GET | /api/recipes | 200 | 500 |
+| GET | /api/recipes/<id> | 200 | 404 |
+| POST | /api/recipes | 201 | 400 |
+| PUT | /api/recipes/<id> | 200 | 400, 404 |
+| DELETE | /api/recipes/<id> | 204 | 404 |
 
 ## 5. Database 
 - A recipes table with id INTEGER PRIMARY KEY AUTOINCREMENT, name, prep_minutes, tags, ingredients, and steps. Lists are stored as JSON text and converted back to lists in the API.
