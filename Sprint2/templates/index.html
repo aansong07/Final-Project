@@ -40,6 +40,7 @@
       </section>
 
       <section class="recipes-section" id="recipes" aria-labelledby="recipes-heading">
+        <p class="page-message" role="alert" hidden></p>
         <div class="recipes-heading-row">
           <div>
             <p class="eyebrow">From our kitchen</p>
@@ -49,6 +50,44 @@
         </div>
         <div class="recipe-grid" aria-live="polite"></div>
         <p class="empty-state" hidden>No recipes match those filters yet.</p>
+      </section>
+
+      <section class="add-recipe-section" aria-labelledby="add-recipe-heading">
+        <p class="eyebrow">From your kitchen</p>
+        <h2 class="section-title" id="add-recipe-heading">Add a recipe</h2>
+        <p class="section-intro">Share the details and tags for a recipe.</p>
+        <form class="recipe-form">
+          <div class="form-field">
+            <label for="recipe-name">Name</label>
+            <input class="form-control" id="recipe-name" name="name" type="text" required>
+          </div>
+          <div class="form-field">
+            <label for="recipe-prep-minutes">Prep minutes</label>
+            <input class="form-control" id="recipe-prep-minutes" name="prepMinutes" type="number" min="1" step="1" required>
+          </div>
+          <fieldset class="tag-fieldset form-field">
+            <legend class="tag-legend">Tags</legend>
+            <div class="tag-options">
+              <label class="tag-option"><input name="tags" type="checkbox" value="protein"> Protein</label>
+              <label class="tag-option"><input name="tags" type="checkbox" value="carbs"> Carbs</label>
+              <label class="tag-option"><input name="tags" type="checkbox" value="fiber"> Fiber</label>
+              <label class="tag-option"><input name="tags" type="checkbox" value="vegetarian"> Vegetarian</label>
+              <label class="tag-option"><input name="tags" type="checkbox" value="vegan"> Vegan</label>
+            </div>
+          </fieldset>
+          <div class="form-field">
+            <label for="recipe-ingredients">Ingredients</label>
+            <textarea class="form-control" id="recipe-ingredients" name="ingredients" rows="4" required></textarea>
+            <p class="field-help">Enter one ingredient per line.</p>
+          </div>
+          <div class="form-field">
+            <label for="recipe-steps">Steps</label>
+            <textarea class="form-control" id="recipe-steps" name="steps" rows="4" required></textarea>
+            <p class="field-help">Enter one step per line.</p>
+          </div>
+          <button class="form-submit" type="submit">Add recipe</button>
+          <p class="form-message" role="alert" hidden></p>
+        </form>
       </section>
     </main>
 
