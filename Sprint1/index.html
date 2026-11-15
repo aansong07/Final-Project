@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f1e8">
+    <title>Yummy Eats</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body class="page">
+    <header class="site-header">
+      <div class="page-width header-content">
+        <p class="eyebrow">Healthy Options for Your Next Meal !</p>
+        <h1 class="page-title">Yummy Eats</h1>
+        <p class="subtitle">Pick a goal, get a recipe.</p>
+      </div>
+    </header>
+
+    <nav class="site-nav" aria-label="Main navigation">
+      <div class="page-width nav-links">
+        <a class="nav-link" href="#filters">Filters</a>
+        <a class="nav-link" href="#recipes">Recipes</a>
+      </div>
+    </nav>
+
+    <main class="page-width main-layout">
+      <section class="filters-section" id="filters" aria-labelledby="filters-heading">
+        <p class="eyebrow">Make it your own</p>
+        <h2 class="section-title" id="filters-heading">Find your kind of good</h2>
+        <p class="section-intro">Choose one or more goals to find recipes that fit.</p>
+        <div class="filter-list" aria-label="Recipe filters">
+          <button class="filter-button" type="button" data-filter="protein" aria-pressed="false">Protein</button>
+          <button class="filter-button" type="button" data-filter="carbs" aria-pressed="false">Carbs</button>
+          <button class="filter-button" type="button" data-filter="fiber" aria-pressed="false">Fiber</button>
+          <button class="filter-button" type="button" data-filter="vegetarian" aria-pressed="false">Vegetarian</button>
+          <button class="filter-button" type="button" data-filter="vegan" aria-pressed="false">Vegan</button>
+        </div>
+        <button class="clear-button" type="button">Clear filters</button>
+      </section>
+
+      <section class="recipes-section" id="recipes" aria-labelledby="recipes-heading">
+        <div class="recipes-heading-row">
+          <div>
+            <p class="eyebrow">From our kitchen</p>
+            <h2 class="section-title" id="recipes-heading">Feel Good Recipes</h2>
+          </div>
+          <p class="recipe-count" aria-live="polite" aria-atomic="true"></p>
+        </div>
+        <div class="recipe-grid" aria-live="polite"></div>
+        <p class="empty-state" hidden>No recipes match those filters yet.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-width footer-content">
+        <p class="footer-note">Good food, made simple.</p>
+      </div>
+    </footer>
+  </body>
+</html>

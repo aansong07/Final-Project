@@ -1,0 +1,89 @@
+# SPEC: Recipe Finder
+## 1. Purpose & Scope
+- A single-page recipe finder for one user. the user picks dietary/nutrition
+  filters and the page shows recipes that match.
+- Filters: Protein, Carbs, Fiber, Vegetarian, Vegan.
+- Non-Goals: no multi-page routing; no backend; no accounts or login;
+  no saving favorites; no user-submitted recipes; no external recipe APIs.
+
+## 2. Invariants & Negative Constraints
+- All styling MUST reside in `./style.css` (no inline style="..." attributes).
+- All behavior MUST reside in `./script.js` (no inline onclick="..." attributes).
+- Recipe data MUST live in one place: a `recipes` array in `./recipes.js`
+  (or `./recipes.json`). Recipes MUST NOT be hardcoded in index.html.
+- The page MUST NOT load external CSS frameworks, JS frameworks, or CDNs
+  (no Bootstrap, no Tailwind, no React, no jQuery).
+- style.css MUST begin with the universal reset: `*, *::before, *::after {
+  box-sizing: border-box; }`.
+- Spacing and font sizes MUST use rem. px MAY be used only for borders.
+- Styling MUST use class selectors. ID selectors MUST NOT be used for styling.
+- The layout MUST collapse into a single vertical column on screens narrower
+  than 768px.
+- Filter state MUST NOT be stored in the DOM only; it MUST live in a JS
+  variable and the UI MUST be re-rendered from it.
+
+## 3. UI Content & Interface Contract
+### 3.1 Page structure
+- Semantic landmarks: one <header>, one <nav>, one <main>, one <footer>,
+  and each content group inside its own <section> with a heading.
+- Exactly one <h1> ("<Recipe Finder>"); heading levels MUST NOT skip.
+- Header: site title and a one-line subtitle: "<Pick a goal, get a recipe.>".
+- <nav> MUST contain links to the filters section and the recipes section.
+
+### 3.2 Filters section (id="filters")
+- Five clickable filter buttons: Protein, Carbs, Fiber, Vegetarian, Vegan.
+- Each MUST be a real <button type="button">, not a <div> or <span>.
+- Each MUST expose its state with `aria-pressed="true|false"`.
+- Selected buttons MUST look visibly different from unselected ones.
+- A "Clear filters" button MUST reset all filters and show all recipes.
+- Filter logic: <decide: multiple filters combine with AND (recipe must match
+  all selected) or OR (match any)>.
+- Vegan recipes MUST also count as vegetarian. <confirm or change>.
+
+### 3.3 Recipes section (id="recipes")
+- Each recipe MUST be an <article class="card"> inside a container that uses
+  display: flex, flex-wrap: wrap and gap.
+- Each card MUST show: recipe name, tag list (e.g., "High protein", "Vegan"),
+  prep time, ingredients list, and short steps.
+- When no recipe matches, the section MUST show a message:
+  "<No recipes match those filters yet.>".
+- The recipe count MUST be displayed ("Showing X of Y recipes") and
+  announced via `aria-live="polite"`.
+
+### 3.4 Recipe data contract
+- Each recipe object MUST have this shape:
+  `{ id, name, tags: [...], prepMinutes, ingredients: [...], steps: [...] }`
+- Allowed tags: "protein", "carbs", "fiber", "vegetarian", "vegan".
+- Minimum starter content: <at least 8 recipes, with at least 1 per tag>.
+
+### 3.5 Visual design
+- Page background: <#hex>; text color: <#hex>; accent color: <#hex>.
+- Headings SHOULD use a serif font such as Georgia; body uses <system sans-serif>.
+- Cards MUST have rounded corners and a visible hover state.
+
+### 3.6 Button states (filters)
+- Filter buttons MUST have four visually distinct states: :hover,
+  :focus-visible, :active, and a selected state ([aria-pressed="true"]).
+- All state rules MUST live in style.css.
+
+## 4. Acceptance Checklist
+- [ ] Exactly one <h1>, one <header>, one <nav>, one <main>, one <footer>.
+- [ ] No inline style="..." or onclick="..." attributes in index.html.
+- [ ] style.css begins with the box-sizing reset.
+- [ ] No ID selectors (#something) in style.css.
+- [ ] No external CSS/JS loaded (check the Network tab).
+- [ ] Every recipe is an <article class="card"> inside a flex container with gap.
+- [ ] Clicking a filter updates the visible recipes immediately.
+- [ ] Clicking the same filter again turns it off.
+- [ ] "Clear filters" shows all recipes again.
+- [ ] Selecting a combination with no matches shows the empty-state message.
+- [ ] Filters are usable with keyboard only (Tab, Enter/Space).
+- [ ] Tabbing to a filter shows a clear focus ring.
+- [ ] No horizontal scrollbar when the browser is narrowed to 375px.
+
+## 5. Audit Protocol
+- Inspect the generated code line by line with `git diff --staged` before
+  committing.
+- Test each acceptance item manually in the browser before marking it [x].
+- Verify every recipe's tags match its ingredients (e.g., no meat in a
+  "vegan" recipe).

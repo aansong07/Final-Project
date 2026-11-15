@@ -255,11 +255,18 @@ def create_recipe():
 
 @app.route("/api/recipes/<recipe_id>", methods=["PUT"])
 def update_recipe(recipe_id):
-    recipe_data, error = clean_recipe_data(request.get_json(silent=True))
-    if error:
-        return jsonify({"error": error}), 400
-
     with db_connection() as connection:
+        existing_recipe = connection.execute(
+            "SELECT 1 FROM recipes WHERE id = ?",
+            (recipe_id,),
+        ).fetchone()
+        if existing_recipe is None:
+            return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
+
+        recipe_data, error = clean_recipe_data(request.get_json(silent=True))
+        if error:
+            return jsonify({"error": error}), 400
+
         cursor = connection.execute(
             """
             UPDATE recipes

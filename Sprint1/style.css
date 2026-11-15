@@ -1,0 +1,342 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --page-background: #A3B18A;
+  --text-color: #344E41;
+  --accent-color: #E9E2D3;
+}
+
+.page {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--page-background);
+  color: var(--text-color);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  min-width: 20rem;
+  margin: 0;
+  background: var(--page-background);
+  color: var(--text-color);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.page-width {
+  width: min(100% - 3rem, 76rem);
+  margin-inline: auto;
+}
+
+.site-header {
+  padding-block: 4.25rem 3.5rem;
+  text-align: center;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.65rem;
+  color: var(--text-color);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.page-title,
+.section-title,
+.card-title {
+  margin: 0;
+  color: var(--text-color);
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.page-title {
+  font-size: 3.75rem;
+  letter-spacing: -0.045em;
+}
+
+.subtitle {
+  margin: 0.8rem 0 0;
+  color: var(--text-color);
+  font-size: 1.125rem;
+}
+
+.site-nav {
+  border-block: 1px solid var(--accent-color);
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 2.25rem;
+  padding-block: 0.75rem;
+}
+
+.nav-link {
+  color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--text-color);
+  text-decoration: underline;
+  text-underline-offset: 0.25rem;
+}
+
+.nav-link:focus-visible {
+  border-radius: 0.2rem;
+  outline: 0.2rem solid var(--text-color);
+  outline-offset: 0.25rem;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.8fr);
+  align-items: start;
+  gap: 3.25rem;
+  padding-block: 3.5rem 4.5rem;
+}
+
+.filters-section {
+  padding: 1.75rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 1.25rem;
+  background: var(--accent-color);
+}
+
+.section-title {
+  font-size: 1.75rem;
+  letter-spacing: -0.025em;
+}
+
+.section-intro {
+  margin: 0.75rem 0 1.5rem;
+  color: var(--text-color);
+  font-size: 0.9375rem;
+}
+
+.filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.filter-button,
+.clear-button {
+  min-height: 2.75rem;
+  padding: 0.6rem 0.95rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 999rem;
+  background: var(--accent-color);
+  color: var(--text-color);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+.filter-button:hover {
+  border-color: var(--text-color);
+  background: var(--page-background);
+  color: var(--text-color);
+}
+
+.filter-button:focus-visible,
+.clear-button:focus-visible {
+  outline: 0.2rem solid var(--text-color);
+  outline-offset: 0.2rem;
+}
+
+.filter-button:active {
+  transform: scale(0.96);
+  background: var(--page-background);
+}
+
+.filter-button[aria-pressed="true"] {
+  border-color: var(--text-color);
+  background: var(--text-color);
+  color: var(--accent-color);
+}
+
+.filter-button[aria-pressed="true"]:hover {
+  border-color: var(--text-color);
+  background: var(--page-background);
+}
+
+.clear-button {
+  margin-top: 1.1rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-color);
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+
+.clear-button:hover {
+  background: var(--accent-color);
+  color: var(--text-color);
+}
+
+.recipes-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.recipe-count {
+  flex: 0 0 auto;
+  margin: 0 0 0.15rem;
+  color: var(--text-color);
+  font-size: 0.8125rem;
+}
+
+.recipe-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.card {
+  flex: 1 1 17rem;
+  min-width: 0;
+  padding: 1.4rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 1rem;
+  background: var(--accent-color);
+  box-shadow: 0 0.25rem 0.8rem rgb(52 78 65 / 10%);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.card:hover {
+  transform: translateY(-0.2rem);
+  border-color: var(--text-color);
+  box-shadow: 0 0.75rem 1.5rem rgb(52 78 65 / 18%);
+}
+
+.card-title {
+  font-size: 1.375rem;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.8rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999rem;
+  background: var(--page-background);
+  color: var(--text-color);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.prep-time {
+  margin: 0 0 1rem;
+  color: var(--text-color);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.card-subheading {
+  margin: 0 0 0.3rem;
+  color: var(--text-color);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ingredient-list,
+.steps-list {
+  margin: 0 0 1rem;
+  padding-left: 1.15rem;
+  color: var(--text-color);
+  font-size: 0.875rem;
+}
+
+.ingredient-item + .ingredient-item,
+.step-item + .step-item {
+  margin-top: 0.2rem;
+}
+
+.steps-list {
+  margin-bottom: 0;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 2.5rem 1rem;
+  border: 1px dashed var(--accent-color);
+  border-radius: 1rem;
+  color: var(--text-color);
+  text-align: center;
+}
+
+.site-footer {
+  border-top: 1px solid var(--accent-color);
+}
+
+.footer-content {
+  padding-block: 1.25rem;
+  color: var(--text-color);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.footer-note {
+  margin: 0;
+}
+
+@media (max-width: 48rem) {
+  .page-width {
+    width: min(100% - 2rem, 42rem);
+  }
+
+  .site-header {
+    padding-block: 3rem 2.5rem;
+  }
+
+  .page-title {
+    font-size: 3rem;
+  }
+
+  .main-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    padding-block: 2.5rem 3.5rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .recipes-heading-row {
+    align-items: start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .card {
+    flex-basis: 100%;
+  }
+}
