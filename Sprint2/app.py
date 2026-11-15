@@ -1,10 +1,16 @@
+import json
+import sqlite3
+from contextlib import closing, contextmanager
+from pathlib import Path
+
 from flask import Flask, jsonify, render_template, request
 
 app = Flask(__name__)
 
 ALLOWED_TAGS = {"protein", "carbs", "fiber", "vegetarian", "vegan"}
+DATABASE_PATH = Path(__file__).with_name("recipes.db")
 
-recipes = [
+STARTER_RECIPES = [
     {
         "id": 1,
         "name": "Lentil Quinoa Bowl",
@@ -72,6 +78,65 @@ recipes = [
 ]
 
 
+@contextmanager
+def db_connection():
+    connection = sqlite3.connect(DATABASE_PATH)
+    connection.row_factory = sqlite3.Row
+    with closing(connection):
+        with connection:
+            yield connection
+
+
+def recipe_from_row(row):
+    return {
+        "id": row["id"],
+        "name": row["name"],
+        "tags": json.loads(row["tags"]),
+        "prepMinutes": row["prep_minutes"],
+        "ingredients": json.loads(row["ingredients"]),
+        "steps": json.loads(row["steps"]),
+    }
+
+
+def initialize_database():
+    with db_connection() as connection:
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS recipes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                prep_minutes INTEGER NOT NULL,
+                tags TEXT NOT NULL,
+                ingredients TEXT NOT NULL,
+                steps TEXT NOT NULL
+            )
+            """
+        )
+        recipe_count = connection.execute(
+            "SELECT COUNT(*) FROM recipes"
+        ).fetchone()[0]
+        if recipe_count == 0:
+            connection.executemany(
+                """
+                INSERT INTO recipes (name, prep_minutes, tags, ingredients, steps)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                [
+                    (
+                        recipe["name"],
+                        recipe["prepMinutes"],
+                        json.dumps(recipe["tags"]),
+                        json.dumps(recipe["ingredients"]),
+                        json.dumps(recipe["steps"]),
+                    )
+                    for recipe in STARTER_RECIPES
+                ],
+            )
+
+
+initialize_database()
+
+
 def clean_recipe_data(data):
     if not isinstance(data, dict):
         return None, "Request body must be a JSON object."
@@ -130,15 +195,31 @@ def home():
 
 @app.route("/api/recipes")
 def get_recipes():
-    return jsonify(recipes)
+    with db_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT id, name, prep_minutes, tags, ingredients, steps
+            FROM recipes
+            ORDER BY id
+            """
+        ).fetchall()
+    return jsonify([recipe_from_row(row) for row in rows])
 
 
 @app.route("/api/recipes/<recipe_id>")
 def get_recipe(recipe_id):
-    recipe = next((item for item in recipes if str(item["id"]) == recipe_id), None)
-    if recipe is None:
+    with db_connection() as connection:
+        row = connection.execute(
+            """
+            SELECT id, name, prep_minutes, tags, ingredients, steps
+            FROM recipes
+            WHERE id = ?
+            """,
+            (recipe_id,),
+        ).fetchone()
+    if row is None:
         return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
-    return jsonify(recipe)
+    return jsonify(recipe_from_row(row))
 
 
 @app.route("/api/recipes", methods=["POST"])
@@ -147,34 +228,75 @@ def create_recipe():
     if error:
         return jsonify({"error": error}), 400
 
-    recipe = {
-        "id": max((item["id"] for item in recipes), default=0) + 1,
-        **recipe_data,
-    }
-    recipes.append(recipe)
-    return jsonify(recipe), 201
+    with db_connection() as connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO recipes (name, prep_minutes, tags, ingredients, steps)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                recipe_data["name"],
+                recipe_data["prepMinutes"],
+                json.dumps(recipe_data["tags"]),
+                json.dumps(recipe_data["ingredients"]),
+                json.dumps(recipe_data["steps"]),
+            ),
+        )
+        row = connection.execute(
+            """
+            SELECT id, name, prep_minutes, tags, ingredients, steps
+            FROM recipes
+            WHERE id = ?
+            """,
+            (cursor.lastrowid,),
+        ).fetchone()
+    return jsonify(recipe_from_row(row)), 201
 
 
 @app.route("/api/recipes/<recipe_id>", methods=["PUT"])
 def update_recipe(recipe_id):
-    recipe = next((item for item in recipes if str(item["id"]) == recipe_id), None)
-    if recipe is None:
-        return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
-
     recipe_data, error = clean_recipe_data(request.get_json(silent=True))
     if error:
         return jsonify({"error": error}), 400
 
-    recipe.update(recipe_data)
-    return jsonify(recipe)
+    with db_connection() as connection:
+        cursor = connection.execute(
+            """
+            UPDATE recipes
+            SET name = ?, prep_minutes = ?, tags = ?, ingredients = ?, steps = ?
+            WHERE id = ?
+            """,
+            (
+                recipe_data["name"],
+                recipe_data["prepMinutes"],
+                json.dumps(recipe_data["tags"]),
+                json.dumps(recipe_data["ingredients"]),
+                json.dumps(recipe_data["steps"]),
+                recipe_id,
+            ),
+        )
+        if cursor.rowcount == 0:
+            return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
+        row = connection.execute(
+            """
+            SELECT id, name, prep_minutes, tags, ingredients, steps
+            FROM recipes
+            WHERE id = ?
+            """,
+            (recipe_id,),
+        ).fetchone()
+    return jsonify(recipe_from_row(row))
 
 
 @app.route("/api/recipes/<recipe_id>", methods=["DELETE"])
 def delete_recipe(recipe_id):
-    recipe = next((item for item in recipes if str(item["id"]) == recipe_id), None)
-    if recipe is None:
+    with db_connection() as connection:
+        cursor = connection.execute(
+            "DELETE FROM recipes WHERE id = ?",
+            (recipe_id,),
+        )
+    if cursor.rowcount == 0:
         return jsonify({"error": f"Recipe with id '{recipe_id}' was not found."}), 404
-    recipes.remove(recipe)
     return "", 204
 
 
